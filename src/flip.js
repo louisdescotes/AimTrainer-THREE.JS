@@ -12,6 +12,7 @@ let score = 0
  */
 // Debug
 let ballSize = .1
+let speed = 1
 
 let sizeWidthApparition = 0.002
 let sizeHeightApparition = 0.002
@@ -26,11 +27,16 @@ gui.add({ ballSize: ballSize }, 'ballSize')
     .onChange(function(value) {
         object1.geometry.dispose();
         object1.geometry = new THREE.SphereGeometry(value, 16, 16);
-        object2.geometry.dispose();
-        object2.geometry = new THREE.SphereGeometry(value, 16, 16);
-        object3.geometry.dispose();
-        object3.geometry = new THREE.SphereGeometry(value, 16, 16);
     });
+    gui.add({ speed: speed }, 'speed')
+    .min(1)
+    .max(4)
+    .step(0.1)
+    .name('Speed')
+    .onChange(function(value) {
+        speed = value;
+    });
+
 
 // Canvas
 const canvas = document.querySelector("canvas.webgl");
@@ -59,28 +65,7 @@ const object1 = new THREE.Mesh(
   new THREE.SphereGeometry(ballSize, 16, 16),
   new THREE.MeshBasicMaterial({ color: "#ff0000" })
 );
-object1.position.x =  (Math.random(sizes.width) * 4.0) - (Math.random() * (2 - -3));
-object1.position.y =  (Math.random(sizes.height) * 2.0  )  - (Math.random() * (-1 - -3));
-
-
-
-
-const object2 = new THREE.Mesh(
-  new THREE.SphereGeometry(ballSize, 16, 16),
-  new THREE.MeshBasicMaterial({ color: "#ff0000" })
-);
-object2.position.x =  (Math.random(sizes.width) * 4.0) - (Math.random() * (2 - -3));
-object2.position.y =  (Math.random(sizes.height) * 2.0  )  - (Math.random() * (-1 - -3));
-
-const object3 = new THREE.Mesh(
-  new THREE.SphereGeometry(ballSize, 16, 16),
-  new THREE.MeshBasicMaterial({ color: "#ff0000" })
-);
-object3.position.x =  (Math.random(sizes.width) * 4.0) - (Math.random() * (2 - -3));
-object3.position.y =  (Math.random(sizes.height) * 2.0)  - (Math.random() * (-1 - -3));
-
-scene.add(object1, object2, object3);
-
+scene.add(object1); // Ajouter la sphère à la scène
 
 window.addEventListener("resize", () => {
   // Update sizes
@@ -106,47 +91,6 @@ window.addEventListener("mousemove", (event) => {
   mouse.y = -(event.clientY / sizes.height) * 2 + 1;
 });
 
-/**
- * Score
- */
-window.addEventListener("click", (event) => {
-  if (currentIntersect) {
-    switch (currentIntersect.object) {
-      case object1:
-        object1.visible = false;
-        score += 1
-        setTimeout(() => {
-          object1.position.x =  (Math.random(sizes.width) * 4.0) - (Math.random() * (2 - -3));
-          object1.position.y =  (Math.random(sizes.height) * 2.0  )  - (Math.random() * (-1 - -3));
-          object1.visible = true
-          console.log(object1)
-        }, 50)
-        break;
-        case object2:
-          object2.visible = false;
-          score += 1
-          setTimeout(() => {
-            object2.position.x =  (Math.random(sizes.width) * 4.0) - (Math.random() * (2 - -3));
-            object2.position.y =  (Math.random(sizes.height) * 2.0  )  - (Math.random() * (-1 - -3));
-            object2.visible = true
-            console.log(object2)
-          }, 50)
-          break;
-          case object3:
-            object3.visible = false;
-            score += 1
-            setTimeout(() => {
-              object3.position.x =  (Math.random(sizes.width) * 4.0) - (Math.random() * (2 - -3));
-              object3.position.y =  (Math.random(sizes.height) * 2.0  )  - (Math.random() * (-1 - -3));
-              object3.visible = true
-              console.log(object3)
-            }, 50)
-            break;
-    }
-    updateScore(); // Mettre à jour le score après chaque clic
-
-  }
-});
 
 /**
  * Camera
@@ -178,6 +122,17 @@ renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
 
+window.addEventListener("click", (event) => {
+    if (currentIntersect) {
+        object1.visible = false;
+        score += 1;
+        updateScore();
+
+        setTimeout(() => {
+            object1.visible = true;
+          }, 500)
+    }
+});
 
 /**
  * Lights
@@ -198,15 +153,21 @@ const clock = new THREE.Clock();
 
 let currentIntersect = null;
 
+
+let previousElapsedTime = 0; // Variable pour stocker le temps précédent
+
 const tick = () => {
-  const elapsedTime = clock.getElapsedTime();
+    const elapsedTime = Math.floor(clock.getElapsedTime()); // Arrondir le temps écoulé à la valeur entière la plus proche
 
-  // Animate objects
-  // object1.position.y = Math.sin(elapsedTime * 3.0) * 1.5;
-  // object1.position.x = Math.sin(elapsedTime * 0.3) * 1.5;
-  // object2.position.y = Math.sin(elapsedTime * 0.8) * 1.5;
-  // object3.position.y = Math.sin(elapsedTime * 1.4) * 1.5;
-
+    // Vérifier si elapsedTime a changé depuis le dernier tick
+    if (elapsedTime !== previousElapsedTime) {
+      // Mettre à jour la position de l'objet avec de nouvelles valeurs aléatoires
+      object1.position.y = Math.sin(elapsedTime / speed) + (Math.random() * 2.0) - 1;
+      object1.position.x = Math.sin(elapsedTime / speed) + (Math.random() * 2.0) - 1;
+  
+      // Mettre à jour la valeur de previousElapsedTime
+      previousElapsedTime = elapsedTime;
+    }
   //Cast a ray
 
   raycaster.setFromCamera(mouse, camera);
@@ -217,12 +178,9 @@ const tick = () => {
 
   // raycaster.set(rayOrgin, rayDirection)
 
-  const objectsToTest = [object1, object2, object3];
+  const objectsToTest = [object1];
   const intersects = raycaster.intersectObjects(objectsToTest);
 
-  for (const object of objectsToTest) {
-    object.material.color.set("#ff0000");
-  }
 
 
   if (intersects.length) {
