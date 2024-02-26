@@ -59,8 +59,8 @@ const object1 = new THREE.Mesh(
   new THREE.SphereGeometry(ballSize, 16, 16),
   new THREE.MeshBasicMaterial({ color: "#ff0000" })
 );
-object1.position.x = (Math.random() * sizes.width - sizes.width );
-object1.position.y = (Math.random() * sizes.height  - sizes.height );
+object1.position.x =  (Math.random(sizes.width) * 4.0) - (Math.random() * (2 - -3));
+object1.position.y =  (Math.random(sizes.height) * 2.0  )  - (Math.random() * (-1 - -3));
 
 
 
@@ -69,15 +69,15 @@ const object2 = new THREE.Mesh(
   new THREE.SphereGeometry(ballSize, 16, 16),
   new THREE.MeshBasicMaterial({ color: "#ff0000" })
 );
-object2.position.x = (Math.random() * sizes.width - sizes.width );
-object2.position.y = (Math.random() * sizes.height - sizes.height );
+object2.position.x =  (Math.random(sizes.width) * 4.0) - (Math.random() * (2 - -3));
+object2.position.y =  (Math.random(sizes.height) * 2.0  )  - (Math.random() * (-1 - -3));
 
 const object3 = new THREE.Mesh(
   new THREE.SphereGeometry(ballSize, 16, 16),
   new THREE.MeshBasicMaterial({ color: "#ff0000" })
 );
-object3.position.x = (Math.random() * sizes.width - sizes.width );
-object3.position.y = (Math.random() * sizes.h - sizes.height );
+object3.position.x =  (Math.random(sizes.width) * 4.0) - (Math.random() * (2 - -3));
+object3.position.y =  (Math.random(sizes.height) * 2.0)  - (Math.random() * (-1 - -3));
 
 scene.add(object1, object2, object3);
 
@@ -109,9 +109,6 @@ window.addEventListener("mousemove", (event) => {
 /**
  * Score
  */
-
-
-
 window.addEventListener("click", (event) => {
   if (currentIntersect) {
     switch (currentIntersect.object) {
@@ -119,8 +116,8 @@ window.addEventListener("click", (event) => {
         object1.visible = false;
         score += 1
         setTimeout(() => {
-          object1.position.x = (Math.random() * sizes.width * sizeWidthApparition - sizes.width * sizeWidthApparition);
-          object1.position.y = (Math.random() * sizes.height * sizeHeightApparition - sizes.height * sizeHeightApparition);
+          object1.position.x =  (Math.random(sizes.width) * 4.0) - (Math.random() * (2 - -3));
+          object1.position.y =  (Math.random(sizes.height) * 2.0  )  - (Math.random() * (-1 - -3));
           object1.visible = true
           console.log(object1)
         }, 50)
@@ -129,8 +126,8 @@ window.addEventListener("click", (event) => {
           object2.visible = false;
           score += 1
           setTimeout(() => {
-            object2.position.x = (Math.random() * sizes.width * sizeWidthApparition - sizes.width * sizeWidthApparition);
-            object2.position.y = (Math.random() * sizes.height * sizeHeightApparition - sizes.height * sizeHeightApparition);
+            object2.position.x =  (Math.random(sizes.width) * 4.0) - (Math.random() * (2 - -3));
+            object2.position.y =  (Math.random(sizes.height) * 2.0  )  - (Math.random() * (-1 - -3));
             object2.visible = true
             console.log(object2)
           }, 50)
@@ -139,8 +136,8 @@ window.addEventListener("click", (event) => {
             object3.visible = false;
             score += 1
             setTimeout(() => {
-              object3.position.x = (Math.random() * sizes.width * sizeWidthApparition - sizes.width * sizeWidthApparition);
-              object3.position.y = (Math.random() * sizes.height * sizeHeightApparition - sizes.height * sizeHeightApparition);
+              object3.position.x =  (Math.random(sizes.width) * 4.0) - (Math.random() * (2 - -3));
+              object3.position.y =  (Math.random(sizes.height) * 2.0  )  - (Math.random() * (-1 - -3));
               object3.visible = true
               console.log(object3)
             }, 50)
@@ -168,6 +165,8 @@ scene.add(camera);
 const controls = new OrbitControls(camera, canvas);
 controls.enableRotate = false; // Désactiver la rotation
 controls.enableZoom = false; // Désactiver le zoom
+controls.enableDamping = true
+
 
 /**
  * Renderer
